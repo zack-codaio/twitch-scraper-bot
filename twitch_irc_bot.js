@@ -31,40 +31,49 @@ rl.question("What channels do you want to join? (no hashtags, space delimited)",
     console.log("Joining:", answer);
     join_channels = answer;
     rl.close();
+    var res = answer.split(" ");
+    for(var i = 0; i < res.length; i++){
+        res[i] = '#'+res[i];
+    }
+    if(res.length == 0){
+        console.log('no channels added')
+    }
+    else {
 
-    setTimeout(function () {
-        var c = new irc.Client(
-            //'irc.dollyfish.net.nz',
-            'irc.twitch.tv',
-            'IACD',
-            {
-                userName: 'IACD',
-                port: 6667,
-                password: oauth,
-                channels: ['#admiralbulldog']
-                //debug: true
-            }
-        );
+        setTimeout(function () {
+            var c = new irc.Client(
+                //'irc.dollyfish.net.nz',
+                'irc.twitch.tv',
+                'IACD',
+                {
+                    userName: 'IACD',
+                    port: 6667,
+                    password: oauth,
+                    channels: res
+                    //debug: true
+                }
+            );
 
 //c.addListener('raw', function(message) { console.log('raw: ', message) });
-        c.addListener('raw', function (message) {
-            console.log(message.args[0] + ": " + message.args[1]);
-        });
-        c.addListener('error', function (message) {
-            console.log(color('error: ', 'red'), message)
-        });
+            c.addListener('raw', function (message) {
+                console.log(message.args[0] + ": " + message.args[1]);
+            });
+            c.addListener('error', function (message) {
+                console.log(color('error: ', 'red'), message)
+            });
 
-        var repl = require('repl').start('> ');
-        repl.context.repl = repl;
-        repl.context.util = util;
-        repl.context.irc = irc;
-        repl.context.c = c;
+            var repl = require('repl').start('> ');
+            repl.context.repl = repl;
+            repl.context.util = util;
+            repl.context.irc = irc;
+            repl.context.c = c;
 
-        repl.inputStream.addListener('close', function () {
-            console.log("\nClosing session");
-            c.disconnect('Closing session');
-        });
-    }, 3000);
+            repl.inputStream.addListener('close', function () {
+                console.log("\nClosing session");
+                c.disconnect('Closing session');
+            });
+        }, 3000);
+    }
 });
 
 
