@@ -1,0 +1,1 @@
+cat twitch_irc_bot.js oauth.js > bot.js

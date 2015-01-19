@@ -1,0 +1,72 @@
+#!/usr/bin/env node
+
+/**
+ * Created by zackaman on 1/19/15.
+ */
+
+//resources:
+//http://help.twitch.tv/customer/portal/articles/1302780-twitch-irc
+//http://davidwalsh.name/nodejs-irc
+//https://github.com/martynsmith/node-irc
+//http://browsenpm.org/package.json
+
+//to build:
+//create oauth.js with your twitch.tv oauth token stored in variable oauth
+//run build.sh to concatenate files into bot.js
+//run bot with 'node bot.js'
+
+var irc = require('irc');
+var util = require('util');
+var color = require('ansi-color').set;
+var readline = require('readline');
+
+var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+var join_channels;
+rl.question("What channels do you want to join? (no hashtags, space delimited)", function (answer) {
+    // TODO: Log the answer in a database
+    console.log("Joining:", answer);
+    join_channels = answer;
+    rl.close();
+
+    setTimeout(function () {
+        var c = new irc.Client(
+            //'irc.dollyfish.net.nz',
+            'irc.twitch.tv',
+            'IACD',
+            {
+                userName: 'IACD',
+                port: 6667,
+                password: oauth,
+                channels: ['#admiralbulldog']
+                //debug: true
+            }
+        );
+
+//c.addListener('raw', function(message) { console.log('raw: ', message) });
+        c.addListener('raw', function (message) {
+            console.log(message.args[0] + ": " + message.args[1]);
+        });
+        c.addListener('error', function (message) {
+            console.log(color('error: ', 'red'), message)
+        });
+
+        var repl = require('repl').start('> ');
+        repl.context.repl = repl;
+        repl.context.util = util;
+        repl.context.irc = irc;
+        repl.context.c = c;
+
+        repl.inputStream.addListener('close', function () {
+            console.log("\nClosing session");
+            c.disconnect('Closing session');
+        });
+    }, 3000);
+});
+
+
+
+
