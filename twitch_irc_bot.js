@@ -4,17 +4,6 @@
  * Created by zackaman on 1/19/15.
  */
 
-//resources:
-//http://help.twitch.tv/customer/portal/articles/1302780-twitch-irc
-//http://davidwalsh.name/nodejs-irc
-//https://github.com/martynsmith/node-irc
-//http://browsenpm.org/package.json
-
-//to build:
-//create oauth.js with your twitch.tv oauth token stored in variable oauth
-//run build.sh to concatenate files into bot.js
-//run bot with 'node bot.js'
-
 var irc = require('irc');
 var util = require('util');
 var color = require('ansi-color').set;
