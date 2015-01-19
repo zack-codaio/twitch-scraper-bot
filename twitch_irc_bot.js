@@ -63,6 +63,7 @@ rl.question("What channels do you want to join? (no hashtags, space delimited)",
 
                     //output to KPM to twitch
                     console.log("KPM = " + kappa);
+                    c.say('#admiralbulldog', "Kappa per minute = "+kappa);
 
 
                     //peak Kappa for hour, day, week month, year
