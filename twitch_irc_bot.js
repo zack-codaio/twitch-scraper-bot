@@ -8,6 +8,7 @@ var irc = require('irc');
 var util = require('util');
 var color = require('ansi-color').set;
 var readline = require('readline');
+var fs = require('fs');
 
 var rl = readline.createInterface({
     input: process.stdin,
@@ -21,7 +22,7 @@ function countOcurrences(str, value) {
 }
 
 var join_channels;
-rl.question("What channels do you want to join? (no hashtags, space delimited)", function (answer) {
+rl.question("What channels do you want to join? (no hashtags, space delimited, lowercase)", function (answer) {
     // TODO: Log the answer in a database
     console.log("Joining:", answer);
     join_channels = answer;
@@ -49,26 +50,64 @@ rl.question("What channels do you want to join? (no hashtags, space delimited)",
                 }
             );
 
-
+            //for each channel
             //for Kappa per minute
             //start an interval timer for 1 minute
-            //initialize kappa to 0
-            var kappa = 0;
+            //initialize emotes to 0;
+            console.log(util.inspect(res, {depth: null}));
+            var emotes = new Object();
+            for (var i = 0; i < res.length; i++) {
+                emotes[res[i]] = new Object();
+                emotes[res[i]].channel = res[i];
+                emotes[res[i]].timestamp = '';
+                emotes[res[i]].Kappa = 0;
+                emotes[res[i]].EleGiggle = 0;
+                emotes[res[i]].Kreygasm = 0;
+                emotes[res[i]].fourhead = 0;
+                emotes[res[i]].FrankerZ = 0;
+            }
             count = 0;
             setInterval(function () {
                 count++;
                 console.log(count);
                 if (count == 60) {
                     //at the end of the minute
+                    //for each channel
+                    //console.log(util.inspect(emotes, {depth: null}));
+                    var keys = Object.keys(emotes);
+                    var keylength = keys.length;
+                    console.log("keylength = "+keylength);
+                    for (var i = 0; i < keylength; i++) {
+                        //timestamp
+                        emotes[res[i]].timestamp = Date.now();
 
-                    //output to KPM to twitch
-                    console.log("KPM = " + kappa);
-                    c.say('#admiralbulldog', "Kappa per minute = "+kappa);
+                        //save data to log
+                        var output = JSON.stringify(emotes[res[i]], null, 4);
+                        console.log(output);
+                        var filename = keys[i].substring(1, keys[i].length) + ".txt";
+                        fs.appendFile('./twitch_logs/'+filename, output+"\n\n", function(err){
+                           if(err){
+                               console.log('error writing to '+filename);
+                           }
+                        });
 
 
-                    //peak Kappa for hour, day, week month, year
-                    //reset state
-                    kappa = 0;
+                        //console.log(util.inspect(emotes, {depth: null}));
+
+                        //output to KPM to twitch
+                        console.log("KPM = " + emotes[res[i]].Kappa);
+                        //c.say(keys[i], "Kappa per minute = "+emotes.Kappa);
+                        //peak Kappa for hour, day, week month, year
+
+
+                        //reset state
+                        emotes[res[i]].Kappa = 0;
+                        emotes[res[i]].EleGiggle = 0;
+                        emotes[res[i]].Kreygasm = 0;
+                        emotes[res[i]].fourhead = 0;
+                        emotes[res[i]].FrankerZ = 0;
+
+                    }
                     count = 0;
                 }
             }, 1000);
@@ -79,11 +118,39 @@ rl.question("What channels do you want to join? (no hashtags, space delimited)",
 
                 //increment kappa by 1 in the message listener
                 if (typeof(message.args[1]) != "undefined") {
-                    var matches = countOcurrences(message.args[1], 'Kappa');
+                    var matchesKappa = countOcurrences(message.args[1], 'Kappa');
                     //console.log(util.inspect(matches, {showHidden: false, depth: null}));
-                    if (matches > 0) {
-                        //console.log('found ' + matches + ' Kappas');
-                        kappa += matches;
+                    if (matchesKappa > 0) {
+                        console.log('found ' + matchesKappa + ' Kappas');
+                        emotes[message.args[0]].Kappa += matchesKappa;
+                    }
+
+                    var matchesEleGiggle = countOcurrences(message.args[1], 'EleGiggle');
+                    //console.log(util.inspect(matches, {showHidden: false, depth: null}));
+                    if (matchesEleGiggle > 0) {
+                        console.log('found ' + matchesEleGiggle + ' EleGiggles');
+                        emotes[message.args[0]].EleGiggle += matchesEleGiggle;
+                    }
+
+                    var matches4Head = countOcurrences(message.args[1], '4Head');
+                    //console.log(util.inspect(matches, {showHidden: false, depth: null}));
+                    if (matches4Head > 0) {
+                        console.log('found ' + matches4Head + ' 4Heads');
+                        emotes[message.args[0]].fourhead += matches4Head;
+                    }
+
+                    var matchesKreygasm = countOcurrences(message.args[1], 'Kreygasm');
+                    //console.log(util.inspect(matches, {showHidden: false, depth: null}));
+                    if (matchesKreygasm > 0) {
+                        console.log('found ' + matchesKreygasm + ' Kreygasm');
+                        emotes[message.args[0]].Kreygasm += matchesKreygasm;
+                    }
+
+                    var matchesFrankerZ = countOcurrences(message.args[1], 'FrankerZ');
+                    //console.log(util.inspect(matches, {showHidden: false, depth: null}));
+                    if (matchesFrankerZ > 0) {
+                        console.log('found ' + matchesFrankerZ + ' FrankerZ');
+                        emotes[message.args[0]].FrankerZ += matchesFrankerZ;
                     }
                 }
 

@@ -6,3 +6,6 @@ oauth.js
 
 #exclude bot.js
 bot.js
+
+#exclude logs
+/twitch_logs/*
