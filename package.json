@@ -4,12 +4,13 @@
   "description": "An IRC bot to scrape twitch.tv chat",
   "author": "Zachary Aman",
   "contributors": [{
-    "name": "Foo Bar",
-    "email": "foo.bar@example.com"
+    "name": "Zachary Aman",
+    "email": "zackyuaman@gmail.com"
   }],
   "dependencies": {
     "irc": "0.3.9",
     "util": "0.10.3",
-    "ansi-color": "0.2.1"
+    "ansi-color": "0.2.1",
+    "cheerio": "0.18.0"
   }
 }
