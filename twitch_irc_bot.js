@@ -55,7 +55,8 @@ else if (debug == false){
 
 //load page (load dynamic content using Zombie)
     var browser = Browser.create();
-    browser.visit('/directory/game/Dota%202', function (error) {
+    //browser.visit('/directory/game/Dota%202', function (error) {
+        browser.visit('/directory/game/League%20of%20Legends', function (error) {
         assert.ifError(error);
 
         twitch_html = browser.html();
@@ -123,6 +124,21 @@ function joinChannels(res){
             //debug: true
         }
     );
+
+    c.addListener('error', function (message) {
+        console.log(color('error: ', 'red'), message)
+    });
+
+    var repl = require('repl').start('> ');
+    repl.context.repl = repl;
+    repl.context.util = util;
+    repl.context.irc = irc;
+    repl.context.c = c;
+
+    repl.inputStream.addListener('close', function () {
+        console.log("\nClosing session");
+        c.disconnect('Closing session');
+    });
 
     //for each channel
     //for Kappa per minute
@@ -230,20 +246,7 @@ function joinChannels(res){
 
 
     });
-    c.addListener('error', function (message) {
-        console.log(color('error: ', 'red'), message)
-    });
 
-    var repl = require('repl').start('> ');
-    repl.context.repl = repl;
-    repl.context.util = util;
-    repl.context.irc = irc;
-    repl.context.c = c;
-
-    repl.inputStream.addListener('close', function () {
-        console.log("\nClosing session");
-        c.disconnect('Closing session');
-    });
 }
 
 
