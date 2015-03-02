@@ -1,0 +1,57 @@
+{
+    "streamName": "#a1taoda",
+    "timestamp": 1425245912167,
+    "numViewers": "5,768",
+    "minutes": {
+        "1": {
+            "emoteName": "Kappa",
+            "ocurrences": 1,
+            "numUsers": 1
+        },
+        "2": {
+            "emoteName": "FrankerZ",
+            "ocurrences": 1,
+            "numUsers": 1
+        },
+        "3": {
+            "emoteName": "BibleThump",
+            "ocurrences": 1,
+            "numUsers": 1
+        },
+        "4": {
+            "emoteName": "Kappa",
+            "ocurrences": 1,
+            "numUsers": 1
+        },
+        "5": {
+            "emoteName": "Kappa",
+            "ocurrences": 0,
+            "numUsers": 0
+        },
+        "6": {
+            "emoteName": "DansGame",
+            "ocurrences": 1,
+            "numUsers": 1
+        },
+        "7": {
+            "emoteName": "Kappa",
+            "ocurrences": 0,
+            "numUsers": 0
+        },
+        "8": {
+            "emoteName": "Kappa",
+            "ocurrences": 0,
+            "numUsers": 0
+        },
+        "9": {
+            "emoteName": "Kappa",
+            "ocurrences": 0,
+            "numUsers": 0
+        },
+        "10": {
+            "emoteName": "Kappa",
+            "ocurrences": 0,
+            "numUsers": 0
+        }
+    }
+}

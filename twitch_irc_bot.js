@@ -5,16 +5,17 @@
  */
 
 //TODO:
-    // - go to twitch.tv dota2 - DONE
-    // - get channel name of most popular stream - DONE
-    // - join channel on IRC - DONE
-    // - collect data for one hour - partial
-        // - all emotes
-        // - how many people in a single minute
-    // - visualize
-    // - post to twitter
-    // - repeat
+// - go to twitch.tv dota2 - DONE
+// - get channel name of most popular stream - DONE
+// - join channel on IRC - DONE
+// - collect data for one hour - partial
+// - all emotes - DONE
+// - how many people in a single minute
+// - visualize
+// - post to twitter
+// - repeat
 
+//requires for scraping
 var irc = require('irc');
 var util = require('util');
 var color = require('ansi-color').set;
@@ -26,6 +27,9 @@ var Browser = require('zombie');
 var assert = require('assert');
 
 
+
+//var emoteJSON = require('global.json');
+
 var ask = false;
 var debug = false;
 
@@ -34,17 +38,17 @@ var rl = readline.createInterface({
     output: process.stdout
 });
 
-if(ask){
+if (ask) {
     askForChannels();
 }
-else if(debug == true){
+else if (debug == true) {
     var channels = new Array();
     channels.push("#sololineabuse");
-    setTimeout(function(){
+    setTimeout(function () {
         joinChannels(channels);
     }, 1000);
 }
-else if (debug == false){
+else if (debug == false) {
 
 //goal: scrape the name of the first channel playing Dota2
     var domain = 'http://www.twitch.tv/';
@@ -55,14 +59,15 @@ else if (debug == false){
 
 //load page (load dynamic content using Zombie)
     var browser = Browser.create();
-    //browser.visit('/directory/game/Dota%202', function (error) {
-        browser.visit('/directory/game/League%20of%20Legends', function (error) {
+    browser.visit('/directory/game/Dota%202', function (error) {
+        //browser.visit('/directory/game/League%20of%20Legends', function (error) {
         assert.ifError(error);
 
         twitch_html = browser.html();
 
         //parse html using Cheerio
         $ = cheerio.load(twitch_html);
+
         //var test = document.getElementsByClassName("info")[1].getElementsByTagName("a")[0].attributes.href
         var scraped_channel = $('.info a').first().attr("href");
         scraped_channel = scraped_channel.substr(1, scraped_channel.length);
@@ -72,20 +77,27 @@ else if (debug == false){
         scraped_channel = "#" + scraped_channel;
         var channels = new Array();
         channels.push(scraped_channel);
-        setTimeout(function(){
-            joinChannels(channels);
+        setTimeout(function () {
+            joinChannels(channels, numViewers);
         }, 1000);
+
+        //get number of viewers:
+        var numViewers = $('.info').first().contents().filter(function(){
+            return this.nodeType == 3;
+        })[1];
+        console.log("Number of Viewers:");
+        console.log(numViewers.data);
+        numViewers = numViewers.data;
     });
 }
 
 
-
-
-
 //from https://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
 function countOcurrences(str, value) {
-    var regExp = new RegExp(value, "g");
-    return str.match(regExp) ? str.match(regExp).length : 0;
+    if (typeof(str) != 'undefined') {
+        var regExp = new RegExp(value, "g");
+        return str.match(regExp) ? str.match(regExp).length : 0;
+    }
 }
 
 function askForChannels() {
@@ -111,7 +123,7 @@ function askForChannels() {
     });
 }
 
-function joinChannels(res){
+function joinChannels(res, numViewers) {
     var c = new irc.Client(
         //'irc.dollyfish.net.nz',
         'irc.twitch.tv',
@@ -140,115 +152,155 @@ function joinChannels(res){
         c.disconnect('Closing session');
     });
 
-    //for each channel
-    //for Kappa per minute
-    //start an interval timer for 1 minute
-    //initialize emotes to 0;
-    console.log(util.inspect(res, {depth: null}));
-    var emotes = new Object();
-    for (var i = 0; i < res.length; i++) {
-        emotes[res[i]] = new Object();
-        emotes[res[i]].channel = res[i];
-        emotes[res[i]].timestamp = '';
-        emotes[res[i]].Kappa = 0;
-        emotes[res[i]].EleGiggle = 0;
-        emotes[res[i]].Kreygasm = 0;
-        emotes[res[i]].fourhead = 0;
-        emotes[res[i]].FrankerZ = 0;
-    }
-    count = 0;
-    setInterval(function () {
-        count++;
-        console.log(count);
-        if (count == 60) {
-            //at the end of the minute
-            //for each channel
-            //console.log(util.inspect(emotes, {depth: null}));
-            var keys = Object.keys(emotes);
-            var keylength = keys.length;
-            console.log("keylength = "+keylength);
-            for (var i = 0; i < keylength; i++) {
-                //timestamp
-                emotes[res[i]].timestamp = Date.now();
 
-                //save data to log
-                var output = JSON.stringify(emotes[res[i]], null, 4);
-                console.log(output);
-                var filename = keys[i].substring(1, keys[i].length) + ".txt";
-                fs.appendFile('./twitch_logs/'+filename, output+"\n\n", function(err){
-                    if(err){
-                        console.log('error writing to '+filename);
-                    }
-                });
-
-
-                //console.log(util.inspect(emotes, {depth: null}));
-
-                //output to KPM to twitch
-                console.log("KPM = " + emotes[res[i]].Kappa);
-                c.say(keys[i], "Kappa per minute = "+emotes[res[i]].Kappa);
-                //peak Kappa for hour, day, week month, year
-
-
-                //reset state
-                emotes[res[i]].Kappa = 0;
-                emotes[res[i]].EleGiggle = 0;
-                emotes[res[i]].Kreygasm = 0;
-                emotes[res[i]].fourhead = 0;
-                emotes[res[i]].FrankerZ = 0;
-
-            }
-            count = 0;
-        }
-    }, 1000);
-
-//c.addListener('raw', function(message) { console.log('raw: ', message) });
-    c.addListener('raw', function (message) {
-        console.log(message.args[0] + ": " + message.args[1]);
-
-        //increment kappa by 1 in the message listener
-        if (typeof(message.args[1]) != "undefined") {
-            var matchesKappa = countOcurrences(message.args[1], 'Kappa');
-            //console.log(util.inspect(matches, {showHidden: false, depth: null}));
-            if (matchesKappa > 0) {
-                console.log('found ' + matchesKappa + ' Kappas');
-                emotes[message.args[0]].Kappa += matchesKappa;
-            }
-
-            var matchesEleGiggle = countOcurrences(message.args[1], 'EleGiggle');
-            //console.log(util.inspect(matches, {showHidden: false, depth: null}));
-            if (matchesEleGiggle > 0) {
-                console.log('found ' + matchesEleGiggle + ' EleGiggles');
-                emotes[message.args[0]].EleGiggle += matchesEleGiggle;
-            }
-
-            var matches4Head = countOcurrences(message.args[1], '4Head');
-            //console.log(util.inspect(matches, {showHidden: false, depth: null}));
-            if (matches4Head > 0) {
-                console.log('found ' + matches4Head + ' 4Heads');
-                emotes[message.args[0]].fourhead += matches4Head;
-            }
-
-            var matchesKreygasm = countOcurrences(message.args[1], 'Kreygasm');
-            //console.log(util.inspect(matches, {showHidden: false, depth: null}));
-            if (matchesKreygasm > 0) {
-                console.log('found ' + matchesKreygasm + ' Kreygasm');
-                emotes[message.args[0]].Kreygasm += matchesKreygasm;
-            }
-
-            var matchesFrankerZ = countOcurrences(message.args[1], 'FrankerZ');
-            //console.log(util.inspect(matches, {showHidden: false, depth: null}));
-            if (matchesFrankerZ > 0) {
-                console.log('found ' + matchesFrankerZ + ' FrankerZ');
-                emotes[message.args[0]].FrankerZ += matchesFrankerZ;
-            }
-        }
-
-
-    });
+    //call another function
+    //pass channel, channel name
+    parse_twitch_stream(c, res[0], numViewers);
 
 }
 
+//for a single channel, parse messages
+//per hour:
+//stream name
+//timestamp
+//initial number of users
+//data by minute
+// - emote
+// - # of uses
+// - # of users who used that emote
+
+//each minute
+//emotes used
+// - # of uses
+// - list of who used that emote
+function parse_twitch_stream(c, channel_name, numViewers) {
+
+    var minute = 0;
+    var past_minuteJSON;
+    minute_parser();
+    var hourJSON = init_hourJSON(channel_name, numViewers);
+    var emoteKeys;
 
 
+    //for 60 times
+    //return minuteJSON after a minute, then call minute_parser() again
 
+    function minute_parser() {
+        //each minute
+        //emotes used
+        // - # of uses
+        // - list of who used that emote
+
+        //intialize data structure
+        var minuteJSON = require('./global.json');
+        //console.log(util.inspect(minuteJSON.emotes, {depth:null}))
+        emoteKeys = Object.keys(minuteJSON.emotes);
+
+        //initialize userSet property as an Object to imitate a set
+        for (var i = 0; i < emoteKeys.length; i++) {
+            minuteJSON.emotes[emoteKeys[i]].userSet = {};
+            minuteJSON.emotes[emoteKeys[i]].ocurrences = 0;
+        }
+        //console.log(util.inspect(emoteKeys, {depth:null}))
+
+        if(minute == 0) {
+            c.addListener('raw', function (message) {
+                //console.log(util.inspect(message, {depth: null}));
+                //console.log(message.args[1]);
+
+                var userName = message.nick;
+
+                //search for emotes
+                for (var i = 0; i < emoteKeys.length; i++) {
+                    //console.log(emoteKeys[i]);
+
+                    var ocurrences = countOcurrences(message.args[1], emoteKeys[i]);
+                    if (ocurrences > 0) {
+                        //console.log(emoteKeys[i] + " : " + ocurrences);
+                        //check to see if userName already present
+                        //if not, add to list
+                        if (!(userName in minuteJSON.emotes[emoteKeys[i]].userSet)) {
+                            minuteJSON.emotes[emoteKeys[i]].userSet[userName] = true;
+                            //console.log("added "+userName+" for "+emoteKeys[i]);
+                        }
+
+                        //add ocurrences to json
+                        minuteJSON.emotes[emoteKeys[i]].ocurrences += ocurrences;
+
+                    }
+                }
+            });
+        }
+
+        //return minuteJSON after 1 minute
+        setTimeout(function(){
+            minuteJSON;
+            minute++;
+            console.log(util.inspect(minuteJSON, {depth: null}));
+            parse_minute_into_hour(minuteJSON);
+            //return true;
+        }, 60000);
+    }
+
+    function init_hourJSON(streamName, numViewers){
+        var hourJSON = new Object();
+
+        hourJSON.streamName = streamName;
+        hourJSON.timestamp = Date.now();
+        hourJSON.numViewers = numViewers;
+        hourJSON.minutes = {};
+
+        return hourJSON;
+    }
+
+    function parse_minute_into_hour(minuteJSON){
+        console.log("parse_minute_into_hour()");
+        var minuteInHour = {};
+
+        var highestEmoticon = "Kappa";
+        var highestQuantity = 0;
+        var numUsers = 0;
+        //iterate through emoticons
+        //find which emoticon has the highest quantity in the minute
+        console.log("MINUTEJSON: ");
+        console.log(util.inspect(minuteJSON, {depth:null}));
+        console.log("for loop has "+minuteJSON.emotes.length+ " emotes to check");
+        for(var i = 0; i < emoteKeys.length; i++){
+            if(minuteJSON.emotes[emoteKeys[i]].ocurrences > highestQuantity){
+                highestQuantity = minuteJSON.emotes[emoteKeys[i]].ocurrences;
+                highestEmoticon = emoteKeys[i];
+                numUsers = Object.keys(minuteJSON.emotes[emoteKeys[i]].userSet).length;
+            }
+        }
+        console.log("reached end of for loop");
+        //add to minuteInHour:
+        // - emoticon name
+        // - # of uses
+        // - # of users
+        minuteInHour.emoteName = highestEmoticon;
+        minuteInHour.ocurrences = highestQuantity;
+        minuteInHour.numUsers = numUsers;
+
+        //add to hourJSON
+        console.log("set minute in hourJSON");
+        hourJSON.minutes[minute] = minuteInHour;
+        console.log("log hourJSON");
+        console.log(util.inspect(hourJSON, {depth: null}));
+        console.log(minute);
+
+        var filename = "./twitch_json/"+hourJSON.timestamp+"-"+hourJSON.streamName+".json";
+        fs.writeFile(filename, JSON.stringify(hourJSON, null, 4, function(err){
+            if(err){
+                console.log(err);
+            }
+            else {
+                console.log("JSON saved to " + filename);
+            }
+        }))
+
+        if(minute <= 60){
+         console.log("starting minute "+minute);
+            minute_parser();
+        }
+    }
+}

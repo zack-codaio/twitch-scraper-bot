@@ -1,0 +1,32 @@
+{
+    "streamName": "#a1taoda",
+    "timestamp": 1425245309649,
+    "numViewers": "5,356",
+    "minutes": {
+        "1": {
+            "emoteName": "Kappa",
+            "ocurrences": 0,
+            "numUsers": 0
+        },
+        "2": {
+            "emoteName": "BibleThump",
+            "ocurrences": 1,
+            "numUsers": 1
+        },
+        "3": {
+            "emoteName": "Kappa",
+            "ocurrences": 0,
+            "numUsers": 0
+        },
+        "4": {
+            "emoteName": "Kappa",
+            "ocurrences": 0,
+            "numUsers": 0
+        },
+        "5": {
+            "emoteName": "PJSalt",
+            "ocurrences": 3,
+            "numUsers": 1
+        }
+    }
+}

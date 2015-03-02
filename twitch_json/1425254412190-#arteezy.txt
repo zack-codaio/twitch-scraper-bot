@@ -1,0 +1,197 @@
+{
+    "streamName": "#arteezy",
+    "timestamp": 1425254412190,
+    "numViewers": "12,711",
+    "minutes": {
+        "1": {
+            "emoteName": "FailFish",
+            "ocurrences": 3,
+            "numUsers": 3
+        },
+        "2": {
+            "emoteName": "Kappa",
+            "ocurrences": 7,
+            "numUsers": 7
+        },
+        "3": {
+            "emoteName": "EleGiggle",
+            "ocurrences": 3,
+            "numUsers": 3
+        },
+        "4": {
+            "emoteName": "Kappa",
+            "ocurrences": 6,
+            "numUsers": 6
+        },
+        "5": {
+            "emoteName": "Kappa",
+            "ocurrences": 5,
+            "numUsers": 5
+        },
+        "6": {
+            "emoteName": "TriHard",
+            "ocurrences": 4,
+            "numUsers": 4
+        },
+        "7": {
+            "emoteName": "Kappa",
+            "ocurrences": 4,
+            "numUsers": 4
+        },
+        "8": {
+            "emoteName": "TriHard",
+            "ocurrences": 8,
+            "numUsers": 8
+        },
+        "9": {
+            "emoteName": "TriHard",
+            "ocurrences": 17,
+            "numUsers": 6
+        },
+        "10": {
+            "emoteName": "Kreygasm",
+            "ocurrences": 6,
+            "numUsers": 6
+        },
+        "11": {
+            "emoteName": "Kreygasm",
+            "ocurrences": 5,
+            "numUsers": 3
+        },
+        "12": {
+            "emoteName": "Kreygasm",
+            "ocurrences": 6,
+            "numUsers": 6
+        },
+        "13": {
+            "emoteName": "Kappa",
+            "ocurrences": 4,
+            "numUsers": 4
+        },
+        "14": {
+            "emoteName": "PogChamp",
+            "ocurrences": 1,
+            "numUsers": 1
+        },
+        "15": {
+            "emoteName": "Kreygasm",
+            "ocurrences": 4,
+            "numUsers": 3
+        },
+        "16": {
+            "emoteName": "TriHard",
+            "ocurrences": 4,
+            "numUsers": 4
+        },
+        "17": {
+            "emoteName": "TriHard",
+            "ocurrences": 3,
+            "numUsers": 3
+        },
+        "18": {
+            "emoteName": "TriHard",
+            "ocurrences": 8,
+            "numUsers": 8
+        },
+        "19": {
+            "emoteName": "Kreygasm",
+            "ocurrences": 6,
+            "numUsers": 5
+        },
+        "20": {
+            "emoteName": "PogChamp",
+            "ocurrences": 6,
+            "numUsers": 2
+        },
+        "21": {
+            "emoteName": "DansGame",
+            "ocurrences": 2,
+            "numUsers": 2
+        },
+        "22": {
+            "emoteName": "Kappa",
+            "ocurrences": 5,
+            "numUsers": 5
+        },
+        "23": {
+            "emoteName": "Kappa",
+            "ocurrences": 3,
+            "numUsers": 3
+        },
+        "24": {
+            "emoteName": "PogChamp",
+            "ocurrences": 2,
+            "numUsers": 2
+        },
+        "25": {
+            "emoteName": "FailFish",
+            "ocurrences": 2,
+            "numUsers": 1
+        },
+        "26": {
+            "emoteName": "4Head",
+            "ocurrences": 1,
+            "numUsers": 1
+        },
+        "27": {
+            "emoteName": "Kappa",
+            "ocurrences": 4,
+            "numUsers": 4
+        },
+        "28": {
+            "emoteName": "Kappa",
+            "ocurrences": 8,
+            "numUsers": 8
+        },
+        "29": {
+            "emoteName": "Keepo",
+            "ocurrences": 4,
+            "numUsers": 4
+        },
+        "30": {
+            "emoteName": "Kappa",
+            "ocurrences": 3,
+            "numUsers": 3
+        },
+        "31": {
+            "emoteName": "DendiFace",
+            "ocurrences": 3,
+            "numUsers": 3
+        },
+        "32": {
+            "emoteName": "Kappa",
+            "ocurrences": 8,
+            "numUsers": 7
+        },
+        "33": {
+            "emoteName": "Kappa",
+            "ocurrences": 7,
+            "numUsers": 7
+        },
+        "34": {
+            "emoteName": "DendiFace",
+            "ocurrences": 4,
+            "numUsers": 4
+        },
+        "35": {
+            "emoteName": "PJSalt",
+            "ocurrences": 3,
+            "numUsers": 2
+        },
+        "36": {
+            "emoteName": "Kappa",
+            "ocurrences": 6,
+            "numUsers": 5
+        },
+        "37": {
+            "emoteName": "4Head",
+            "ocurrences": 5,
+            "numUsers": 5
+        },
+        "38": {
+            "emoteName": "Kreygasm",
+            "ocurrences": 6,
+            "numUsers": 6
+        }
+    }
+}
