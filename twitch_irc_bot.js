@@ -8,10 +8,10 @@
 // - go to twitch.tv dota2 - DONE
 // - get channel name of most popular stream - DONE
 // - join channel on IRC - DONE
-// - collect data for one hour - partial
+// - collect data for one hour - DONE
 // - all emotes - DONE
-// - how many people in a single minute
-// - visualize
+// - how many people in a single minute - DONE
+// - visualize - partial
 // - post to twitter
 // - repeat
 
@@ -298,9 +298,14 @@ function parse_twitch_stream(c, channel_name, numViewers) {
             }
         }))
 
-        if(minute <= 60){
+        if(minute < 60){
          console.log("starting minute "+minute);
             minute_parser();
+        }
+        else{
+            //pass filename
+            //render and tweet
+            //close
         }
     }
 }

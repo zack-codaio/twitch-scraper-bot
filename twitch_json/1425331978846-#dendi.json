@@ -297,6 +297,11 @@
             "emoteName": "DendiFace",
             "ocurrences": 4,
             "numUsers": 2
+        },
+        "60": {
+            "emoteName": "Kappa",
+            "ocurrences": 1,
+            "numUsers": 1
         }
     }
 }

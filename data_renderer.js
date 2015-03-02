@@ -8,8 +8,10 @@ var Image = Canvas.Image;
 var imageWidth = 506;
 var imageHeight = 337;
 var sidePadding = 15;
-
-var drawableWidth = imageWidth - 2 * sidePadding;
+var baselineY = 310;
+var topSpace = 20;
+var legendWidth = 80;
+var drawableWidth = imageWidth - 2 * sidePadding - legendWidth;
 
 var emotes = require('./twitch_json/1425242227267-#dotapit.json');
 //process for
@@ -47,6 +49,11 @@ for(var i = 0; i < numEmotes; i++){
     }
 }
 
+//for legend:
+// - emote name
+// - color
+// - ocurrences
+
 var canvas = new Canvas(imageWidth, imageHeight);
 ctx = canvas.getContext('2d');
 
@@ -54,33 +61,31 @@ ctx = canvas.getContext('2d');
 ctx.fillStyle = '#FFF';
 ctx.fillRect(0,0,imageWidth, imageHeight);
 
-ctx.fillStyle = '#000';
-
 //draw baseline
+ctx.fillStyle = '#000';
 ctx.beginPath();
-ctx.lineTo(0+sidePadding,307);
-ctx.lineTo(imageWidth - sidePadding,307);
+ctx.lineTo(0+sidePadding,baselineY);
+ctx.lineTo(sidePadding + drawableWidth,baselineY);
 ctx.strokeStyle = 'rgba(0,0,0,0.5)';
 ctx.stroke();
-
-
 
 //draw bars
 var curX = sidePadding;
 var barWidth = drawableWidth / numMinutes;
 var barHeight = 0;
 var curY = 0;
-var maxHeight = imageHeight - 50 - 30;
+var maxHeight = baselineY - topSpace;
 for(var i = 0; i < numMinutes; i++){
     //find highest number of ocurrences
     //scale bar height to 250px?
     //bar height = (ocurrences / max ocurrences) * 250px
     //calculate barHeight and use that to place initial Y coord
     var emoteName = emotes.minutes[minutes[i]].emoteName;
+    ctx.fillStyle = emoteSet[emoteName];
     var ocurrences = emotes.minutes[minutes[i]].ocurrences;
     var numUsers = emotes.minutes[minutes[i]].numUsers;
     barHeight = maxHeight * ocurrences / mostOcurrences;
-    curY = maxHeight - barHeight + 50;
+    curY = maxHeight - barHeight + topSpace;
 
     //set bar saturation via users / ocurrences
     //set transparency based on hive-mindey-ness
@@ -88,25 +93,49 @@ for(var i = 0; i < numMinutes; i++){
 
     //set color from emote
     console.log(emoteSet[emoteName]);
-    ctx.fillStyle = emoteSet[emoteName];
+
 
     ctx.fillRect(curX, curY, barWidth-2, barHeight);
     curX += barWidth;
 }
 
-//example code
-ctx.font = '30px Helvetica';
-ctx.rotate(.1);
-ctx.fillText("Awesome!", 50, 100);
 
-var te = ctx.measureText('Awesome!');
-ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-ctx.beginPath();
-ctx.lineTo(50, 102);
-ctx.lineTo(50 + te.width, 102);
-ctx.stroke();
+//label minutes
+var baselineOffset = 18;
+ctx.fillStyle = "#000";
+ctx.font = '14px Helvetica';
+ctx.fillText("0",sidePadding, baselineY + baselineOffset);
+var lastMinute = Object.keys(emotes.minutes).length;
+ctx.fillText(lastMinute,  sidePadding + drawableWidth - ctx.measureText(lastMinute).width, baselineY + baselineOffset);
+ctx.fillText("Minutes", imageWidth/2 - ctx.measureText("Minutes").width, baselineY+baselineOffset);
 
-console.log('<img src="' + canvas.toDataURL() + '" />');
+//ctx.rotate(.1);
+//ctx.fillText("Awesome!", 50, 100);
+//
+//var te = ctx.measureText('Awesome!');
+//ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+//ctx.beginPath();
+//ctx.lineTo(50, 102);
+//ctx.lineTo(50 + te.width, 102);
+//ctx.stroke();
+//
+//console.log('<img src="' + canvas.toDataURL() + '" />');
+
+//draw legend
+var curX = imageWidth - legendWidth + 15;
+var curY = 15;
+var rectSize = 10;
+for(var i = 0; i < numEmotes; i++){
+    //draw rectangle
+    //var emoteName = emotes.minutes[minutes[i]].emoteName;
+    boxY = curY + imageHeight / numEmotes - rectSize/2;
+    ctx.fillStyle = emoteSet[Object.keys(emoteSet)[i]];
+    ctx.fillRect(curX, curY, rectSize, rectSize);
+    //draw emote
+    //draw text
+
+    curY += imageHeight / numEmotes;
+}
 
 
 //save png
