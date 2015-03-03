@@ -9,7 +9,7 @@ var fs = require('fs');
 var Canvas = require('canvas');
 var Image = Canvas.Image;
 
-var emotes = require('./twitch_logs_by_minute/1425359158165-#eternalenvyy.json');
+var emotes = require('./twitch_logs_by_minute/1425359460960-#eternalenvyy.json');
 //process for
 // - number of minutes
 var minutes = Object.keys(emotes.minutes);
@@ -100,21 +100,29 @@ function draw_bar_for_minute(minute) {
                 console.log(emoteArray.length);
                 var iconFile = './resources/icons/' + emoteArray[a] + '.png';
 
+
+
                 fs.readFile(iconFile, function (err, data) {
                     if (err) {
                         console.log(err);
                         throw err;
                     }
-                    var img = new Canvas.Image;
-                    img.src = data;
+                    if(emoteArray[a] != "TTours") {
+                        var img = new Canvas.Image;
+                        img.src = data;
 
-                    console.log(iconFile);
-                    console.log("x: " + curX + " y: " + curY);
-                    console.log("width: " + img.width + " height: " + img.height);
+                        console.log(iconFile);
+                        console.log("x: " + curX + " y: " + curY);
+                        console.log("width: " + img.width + " height: " + img.height);
 
-                    ctx.drawImage(img, curX, curY, img.width, img.height);
-                    curY -= 40;
+                        //try{
+                        ctx.drawImage(img, curX, curY, img.width, img.height);
+                        curY -= 40;
+                    }
+                    //}
+                    //catch(e){
                     draw_emotes(a + 1);
+                    //}
                     //save_img();
                 });
             }
@@ -125,7 +133,7 @@ function draw_bar_for_minute(minute) {
 
 function save_img() {
     //save png
-    var filename = "./rendered_visualizations" + '/hour_test2.png';
+    var filename = "./rendered_visualizations" + '/hour_test3.png';
     var out = fs.createWriteStream(filename)
         , stream = canvas.pngStream();
 
