@@ -59,8 +59,8 @@ else if (debug == false) {
 
 //load page (load dynamic content using Zombie)
     var browser = Browser.create();
-    browser.visit('/directory/game/Dota%202', function (error) {
-        //browser.visit('/directory/game/League%20of%20Legends', function (error) {
+    //browser.visit('/directory/game/Dota%202', function (error) {
+        browser.visit('/directory/game/League%20of%20Legends', function (error) {
         assert.ifError(error);
 
         twitch_html = browser.html();
@@ -193,6 +193,8 @@ function parse_twitch_stream(c, channel_name, numViewers) {
 
         //intialize data structure
         var minuteJSON = require('./global.json');
+        delete minuteJSON.meta;
+        delete minuteJSON.template;
         //console.log(util.inspect(minuteJSON.emotes, {depth:null}))
         emoteKeys = Object.keys(minuteJSON.emotes);
 
@@ -254,41 +256,63 @@ function parse_twitch_stream(c, channel_name, numViewers) {
     }
 
     function parse_minute_into_hour(minuteJSON){
-        console.log("parse_minute_into_hour()");
-        var minuteInHour = {};
+        //clone minuteJSON
+        var minuteCLONE = JSON.parse(JSON.stringify(minuteJSON));
 
-        var highestEmoticon = "Kappa";
-        var highestQuantity = 0;
-        var numUsers = 0;
+        console.log("parse_minute_into_hour()");
+        //var minuteInHour = {};
+        //var highestEmoticon = "Kappa";
+        //var highestQuantity = 0;
+        //var numUsers = 0;
+
         //iterate through emoticons
         //find which emoticon has the highest quantity in the minute
-        console.log("MINUTEJSON: ");
-        console.log(util.inspect(minuteJSON, {depth:null}));
-        console.log("for loop has "+minuteJSON.emotes.length+ " emotes to check");
+
+        //console.log("MINUTEJSON: ");
+        //console.log(util.inspect(minuteJSON, {depth:null}));
+        //console.log("for loop has "+minuteJSON.emotes.length+ " emotes to check");
+
+        //for(var i = 0; i < emoteKeys.length; i++){
+            //if(minuteJSON.emotes[emoteKeys[i]].ocurrences > highestQuantity){
+            //    highestQuantity = minuteJSON.emotes[emoteKeys[i]].ocurrences;
+            //    highestEmoticon = emoteKeys[i];
+            //    numUsers = Object.keys(minuteJSON.emotes[emoteKeys[i]].userSet).length;
+            //}
+        //}
+        //console.log("reached end of for loop");
+
+
         for(var i = 0; i < emoteKeys.length; i++){
-            if(minuteJSON.emotes[emoteKeys[i]].ocurrences > highestQuantity){
-                highestQuantity = minuteJSON.emotes[emoteKeys[i]].ocurrences;
-                highestEmoticon = emoteKeys[i];
-                numUsers = Object.keys(minuteJSON.emotes[emoteKeys[i]].userSet).length;
+            if(minuteCLONE.emotes[emoteKeys[i]].ocurrences == 0){
+                delete minuteCLONE.emotes[emoteKeys[i]];
+            }
+            else{
+                delete minuteCLONE.emotes[emoteKeys[i]].description;
+                delete minuteCLONE.emotes[emoteKeys[i]].image_id;
             }
         }
-        console.log("reached end of for loop");
+
+        //tweet?
+
+
         //add to minuteInHour:
         // - emoticon name
         // - # of uses
         // - # of users
-        minuteInHour.emoteName = highestEmoticon;
-        minuteInHour.ocurrences = highestQuantity;
-        minuteInHour.numUsers = numUsers;
+
+        //minuteInHour.emoteName = highestEmoticon;
+        //minuteInHour.ocurrences = highestQuantity;
+        //minuteInHour.numUsers = numUsers;
 
         //add to hourJSON
         console.log("set minute in hourJSON");
-        hourJSON.minutes[minute] = minuteInHour;
+        //hourJSON.minutes[minute] = minuteInHour;
+        hourJSON.minutes[minute] = minuteCLONE;
         console.log("log hourJSON");
         console.log(util.inspect(hourJSON, {depth: null}));
         console.log(minute);
 
-        var filename = "./twitch_json/"+hourJSON.timestamp+"-"+hourJSON.streamName+".json";
+        var filename = "./twitch_logs_by_minute/"+hourJSON.timestamp+"-"+hourJSON.streamName+".json";
         fs.writeFile(filename, JSON.stringify(hourJSON, null, 4, function(err){
             if(err){
                 console.log(err);
