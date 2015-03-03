@@ -61,8 +61,8 @@ else if (debug == false) {
 
 //load page (load dynamic content using Zombie)
     var browser = Browser.create();
-    //browser.visit('/directory/game/Dota%202', function (error) {
-        browser.visit('/directory/game/League%20of%20Legends', function (error) {
+    browser.visit('/directory/game/Dota%202', function (error) {
+        //browser.visit('/directory/game/League%20of%20Legends', function (error) {
         assert.ifError(error);
 
         twitch_html = browser.html();
@@ -368,10 +368,10 @@ function translate_to_emoji(emoteArray){
         if(length < 70){
             switch(emoteArray[i]){
                 case "Kappa":
-                    emojiString+= emoji.get(":japanese_goblin:");
+                    emojiString+= emoji.get(":smirk:");
                     break;
                 case "Keepo":
-                    emojiString+=emoji.get(":japanese_ogre:");
+                    emojiString+=emoji.get(":rabbit:");
                     break;
                 case "PogChamp":
                     emojiString+=emoji.get(":scream:");
@@ -397,6 +397,24 @@ function translate_to_emoji(emoteArray){
                     break;
                 case "EleGiggle":
                     emojiString+=emoji.get(":laughing:");
+                    break;
+                case "4Head":
+                    emojiString+=emoji.get(":older_man:");
+                    break;
+                case "DansGame":
+                    emojiString+=emoji.get(":angry:");
+                    break;
+                case "Kreygasm":
+                    emojiString+=emoji.get(":open_mouth:");
+                    break;
+                case "WutFace":
+                    emojiString+=emoji.get(":unamused:");
+                    break;
+                case "KAPOW":
+                    emojiString+=emoji.get(":boom:");
+                    break;
+                case "FailFish":
+                    emojiString+=emoji.get(":pensive:");
                     break;
                 default:
                     break;
