@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+
 
 /**
  * Created by zackaman on 1/19/15.
@@ -26,7 +26,9 @@ var request = require('request');
 var Browser = require('zombie');
 var assert = require('assert');
 
-
+var Twit = require('twit');
+var T = new Twit(twit_credentials);
+var emoji = require('node-emoji');
 
 //var emoteJSON = require('global.json');
 
@@ -238,7 +240,7 @@ function parse_twitch_stream(c, channel_name, numViewers) {
         setTimeout(function(){
             minuteJSON;
             minute++;
-            console.log(util.inspect(minuteJSON, {depth: null}));
+            //console.log(util.inspect(minuteJSON, {depth: null}));
             parse_minute_into_hour(minuteJSON);
             //return true;
         }, 60000);
@@ -293,6 +295,24 @@ function parse_twitch_stream(c, channel_name, numViewers) {
         }
 
         //tweet?
+        emotes2 = minuteCLONE.emotes;
+        //console.log(util.inspect(emotes));
+
+        var emoteArray = [];
+
+        //count number of emotes
+        var totalEmotes = 0;
+        var emoteKeys2 = Object.keys(emotes2);
+        for (var i = 0; i < emoteKeys2.length; i++) {
+            //totalEmotes += emotes[emoteKeys[i]].ocurrences;
+            for (var j = 0; j < emotes2[emoteKeys2[i]].ocurrences; j++) {
+                emoteArray.push(emoteKeys2[i]);
+            }
+        }
+        console.log(emoteArray);
+
+        translate_to_emoji(emoteArray);
+
 
 
         //add to minuteInHour:
@@ -305,22 +325,25 @@ function parse_twitch_stream(c, channel_name, numViewers) {
         //minuteInHour.numUsers = numUsers;
 
         //add to hourJSON
-        console.log("set minute in hourJSON");
+        //console.log("set minute in hourJSON");
         //hourJSON.minutes[minute] = minuteInHour;
         hourJSON.minutes[minute] = minuteCLONE;
         console.log("log hourJSON");
-        console.log(util.inspect(hourJSON, {depth: null}));
+        //console.log(util.inspect(hourJSON, {depth: null}));
         console.log(minute);
 
         var filename = "./twitch_logs_by_minute/"+hourJSON.timestamp+"-"+hourJSON.streamName+".json";
-        fs.writeFile(filename, JSON.stringify(hourJSON, null, 4, function(err){
+        fs.writeFileSync(filename, JSON.stringify(hourJSON, null, 4, function(err){
             if(err){
                 console.log(err);
             }
             else {
                 console.log("JSON saved to " + filename);
+
             }
-        }))
+
+        }));
+
 
         if(minute < 60){
          console.log("starting minute "+minute);
@@ -332,4 +355,67 @@ function parse_twitch_stream(c, channel_name, numViewers) {
             //close
         }
     }
+}
+
+function translate_to_emoji(emoteArray){
+    console.log("translating");
+    console.log(emoteArray);
+
+    var emojiString = "";
+    var length = 0;
+
+    for(var i= 0 ; i < emoteArray.length; i++){
+        if(length < 70){
+            switch(emoteArray[i]){
+                case "Kappa":
+                    emojiString+= emoji.get(":japanese_goblin:");
+                    break;
+                case "Keepo":
+                    emojiString+=emoji.get(":japanese_ogre:");
+                    break;
+                case "PogChamp":
+                    emojiString+=emoji.get(":scream:");
+                    break;
+                case "BibleThump":
+                    emojiString+=emoji.get(":cold_sweat:");
+                    break;
+                case "BabyRage":
+                    emojiString+=emoji.get(":baby:");
+                    emojiString+=emoji.get(":rage:");
+                    break;
+                case "ANELE":
+                    emojiString+=emoji.get(":man_with_turban:");
+                    break;
+                case "PJSalt":
+                    emojiString+=emoji.get(":fist:");
+                    break;
+                case "ResidentSleeper":
+                    emojiString+=emoji.get(":sleeping:");
+                    break;
+                case "SwiftRage":
+                    emojiString+=emoji.get(":pouting_cat:");
+                    break;
+                case "EleGiggle":
+                    emojiString+=emoji.get(":laughing:");
+                    break;
+                default:
+                    break;
+            }
+
+
+        }
+        else{
+            break;
+        }
+    }
+
+    emojiString = emojiString.substr(0, 140);
+
+    console.log(emojiString);
+
+    T.post('statuses/update', { status: emojiString }, function(err, data, response) {
+        console.log(emoteArray);
+        console.log(emojiString)
+
+    })
 }

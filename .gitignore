@@ -3,9 +3,16 @@
 
 #exclude oauth.js
 oauth.js
+botConfig.js
 
 #exclude bot.js
 bot.js
+minute_bot.js
+bot2.js
 
 #exclude logs
 /twitch_logs/*
+/twitch_json/*
+/twitch_logs_by_minute/*
+/tweetable_images/*
+/rendered_visualizations/*

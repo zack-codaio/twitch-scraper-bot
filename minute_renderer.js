@@ -17,7 +17,12 @@ var topSpace = 20;
 var legendWidth = 80;
 var drawableWidth = imageWidth - 2 * sidePadding - legendWidth;
 
-draw_and_tweet_minute('./twitch_logs_by_minute/1425342663827-#tsm_theoddone.json', 13);
+var Twit = require('twit');
+//var twitCreds = require('botConfig.js');
+var T = new Twit(twit_credentials);
+var emoji = require('node-emoji');
+
+//draw_and_tweet_minute('./twitch_logs_by_minute/1425342663827-#tsm_theoddone.json', 60);
 
 function draw_and_tweet_minute(filename, minute) {
     var emotes = require(filename);
@@ -35,12 +40,14 @@ function draw_and_tweet_minute(filename, minute) {
             emoteArray.push(emoteKeys[i]);
         }
     }
-    imageHeight = 30 * Math.ceil(emoteArray.length / 17) + 10;
-    if(emoteArray.length < 17){
+    imageHeight = 40 * Math.ceil(emoteArray.length / 17) + 10;
+    if (emoteArray.length < 17) {
         imageWidth = 40 * emoteArray.length;
     }
     //imageHeight = 500;
     console.log(emoteArray);
+
+    translate_to_emoji(emoteArray);
 
 
     var canvas = new Canvas(imageWidth, imageHeight);
@@ -56,7 +63,7 @@ function draw_and_tweet_minute(filename, minute) {
 
     //draw emotes in order
 
-    draw_emotes(0);
+    //draw_emotes(0);
     function draw_emotes(a) {
         console.log(a);
         console.log(emoteArray.length);
@@ -82,9 +89,9 @@ function draw_and_tweet_minute(filename, minute) {
 
                 ctx.drawImage(img, curX, curY, img.width, img.height);
                 curX += img.width + 5;
-                if (curX >= 520) {
+                if (curX >= 500) {
                     curX = 5;
-                    curY += 30;
+                    curY += 40;
                 }
 
                 draw_emotes(a + 1);
@@ -95,7 +102,8 @@ function draw_and_tweet_minute(filename, minute) {
 
     function save_img() {
         //save png
-        var out = fs.createWriteStream("./rendered_visualizations" + '/test.png')
+        var filename = "./tweetable_images" + '/test.png';
+        var out = fs.createWriteStream(filename)
             , stream = canvas.pngStream();
 
         stream.on('data', function (chunk) {
@@ -105,129 +113,124 @@ function draw_and_tweet_minute(filename, minute) {
         stream.on('end', function () {
             console.log('saved png');
             //console.log(emoteSet['Kappa'].color);
+            //tweet_img(filename);
         });
     }
+
+
+
+
+    //var twitter_update_with_media = require('twitter_update_with_media');
+    //
+    //var tuwm = new twitter_update_with_media(twit_credentials);
+
+
+
+    function tweet_img(filename) {
+
+
+        //tuwm.post('This is a test', filename, function(err, response) {
+        //    if (err) {
+        //        console.log(err);
+        //    }
+        //    console.log(response);
+        //});
+
+
+        console.log(filename);
+        //
+        // post a tweet with media
+        //
+        //var b64content = fs.readFile(filename, {encoding: 'base64'}, function (err, data) {
+        //    console.log(data);
+        //    // first we must post the media to Twitter
+        //    T.post('media/upload', {media: b64content}, function (err, data, response) {
+        //        console.log(util.inspect(response, {depth:null}));
+        //
+        //        // now we can reference the media and post a tweet (media will attach to the tweet)
+        //        var mediaIdStr = data.media_id_string;
+        //        var params = {status: 'loving life #nofilter', media_ids: [mediaIdStr]}
+        //
+        //        T.post('statuses/update', params, function (err, data, response) {
+        //            console.log(data)
+        //        })
+        //    });
+        //
+        //    console.log(data);
+        //})
+
+        //
+        //  tweet 'hello world!'
+        //
+        T.post('statuses/update', { status: 'hello world!' }, function(err, data, response) {
+            console.log(data)
+        })
+    }
+
+
+    function handleError(err) {
+        console.error('response status:', err.statusCode);
+        console.error('data:', err.data);
+    }
+
 }
-/*
- // - number of different emotes
- //build set of emotes present in the JSON
- var emoteSet = {};
- var mostOcurrences = 0;
- for(var i = 0; i < numMinutes; i++){
- var curEmote = emotes.minutes[minutes[i]].emoteName;
- //console.log(curEmote);
- if(!(curEmote in emoteSet)){
- emoteSet[curEmote] = true;
- }
 
- // - highest number of emotes
- if(emotes.minutes[minutes[i]].ocurrences > mostOcurrences){
- mostOcurrences = emotes.minutes[minutes[i]].ocurrences;
- }
- }
- console.log("Largest spike = "+ mostOcurrences);
- var numEmotes = Object.keys(emoteSet).length;
+function translate_to_emoji(emoteArray){
+    console.log("translating");
+    console.log(emoteArray);
 
- var colorList = ['#000000', '#0000FF', '#660066', '#990000', '#006600', '#FF6600', '#CCCC00', '#663300', '#FF0099', '#66FF00'];
+    var emojiString = "";
+    var length = 0;
 
- var curColor = 0;
- for(var i = 0; i < numEmotes; i++){
- emoteSet[Object.keys(emoteSet)[i]] = colorList[curColor];
- curColor++;
- if(curColor >= colorList.length){
- curColor = 0;
- }
- }
-
- //for legend:
- // - emote name
- // - color
- // - ocurrences
-
- var canvas = new Canvas(imageWidth, imageHeight);
- ctx = canvas.getContext('2d');
-
- //draw white background
- ctx.fillStyle = '#FFF';
- ctx.fillRect(0,0,imageWidth, imageHeight);
-
- //draw baseline
- ctx.fillStyle = '#000';
- ctx.beginPath();
- ctx.lineTo(0+sidePadding,baselineY);
- ctx.lineTo(sidePadding + drawableWidth,baselineY);
- ctx.strokeStyle = 'rgba(0,0,0,0.5)';
- ctx.stroke();
-
- //draw bars
- var curX = sidePadding;
- var barWidth = drawableWidth / numMinutes;
- var barHeight = 0;
- var curY = 0;
- var maxHeight = baselineY - topSpace;
- for(var i = 0; i < numMinutes; i++){
- //find highest number of ocurrences
- //scale bar height to 250px?
- //bar height = (ocurrences / max ocurrences) * 250px
- //calculate barHeight and use that to place initial Y coord
- var emoteName = emotes.minutes[minutes[i]].emoteName;
- ctx.fillStyle = emoteSet[emoteName];
- var ocurrences = emotes.minutes[minutes[i]].ocurrences;
- var numUsers = emotes.minutes[minutes[i]].numUsers;
- barHeight = maxHeight * ocurrences / mostOcurrences;
- curY = maxHeight - barHeight + topSpace;
-
- //set bar saturation via users / ocurrences
- //set transparency based on hive-mindey-ness
- ctx.globalAlpha = Math.pow(numUsers / ocurrences, 2);
-
- //set color from emote
- console.log(emoteSet[emoteName]);
+    for(var i= 0 ; i < emoteArray.length; i++){
+        if(length < 70){
+            switch(emoteArray[i]){
+                case "Kappa":
+                    emojiString+= emoji.get(":japanese_goblin:");
+                    break;
+                case "Keepo":
+                    emojiString+=emoji.get(":japanese_ogre:");
+                    break;
+                case "PogChamp":
+                    emojiString+=emoji.get(":scream:");
+                    break;
+                case "BibleThump":
+                    emojiString+=emoji.get(":cold_sweat:");
+                    break;
+                case "BabyRage":
+                    emojiString+=emoji.get(":baby:");
+                    emojiString+=emoji.get(":rage:");
+                    break;
+                case "ANELE":
+                    emojiString+=emoji.get(":man_with_turban:");
+                    break;
+                case "PJSalt":
+                    emojiString+=emoji.get(":fist:");
+                    break;
+                case "ResidentSleeper":
+                    emojiString+=emoji.get(":sleeping:");
+                    break;
+                case "SwiftRage":
+                    emojiString+=emoji.get(":pouting_cat:");
+                    break;
+                default:
+                    break;
+            }
 
 
- ctx.fillRect(curX, curY, barWidth-2, barHeight);
- curX += barWidth;
- }
+        }
+        else{
+            break;
+        }
+    }
 
+    emojiString = emojiString.substr(0, 140);
 
- //label minutes
- var baselineOffset = 18;
- ctx.fillStyle = "#000";
- ctx.font = '14px Helvetica';
- ctx.fillText("0",sidePadding, baselineY + baselineOffset);
- var lastMinute = Object.keys(emotes.minutes).length;
- ctx.fillText(lastMinute,  sidePadding + drawableWidth - ctx.measureText(lastMinute).width, baselineY + baselineOffset);
- ctx.fillText("Minutes", imageWidth/2 - ctx.measureText("Minutes").width, baselineY+baselineOffset);
+    console.log(emojiString);
 
- //ctx.rotate(.1);
- //ctx.fillText("Awesome!", 50, 100);
- //
- //var te = ctx.measureText('Awesome!');
- //ctx.strokeStyle = 'rgba(0,0,0,0.5)';
- //ctx.beginPath();
- //ctx.lineTo(50, 102);
- //ctx.lineTo(50 + te.width, 102);
- //ctx.stroke();
- //
- //console.log('<img src="' + canvas.toDataURL() + '" />');
+    T.post('statuses/update', { status: emojiString }, function(err, data, response) {
+        console.log(emoteArray);
+        console.log(emojiString)
 
- //draw legend
- var curX = imageWidth - legendWidth + 15;
- var curY = 15;
- var rectSize = 10;
- for(var i = 0; i < numEmotes; i++){
- //draw rectangle
- //var emoteName = emotes.minutes[minutes[i]].emoteName;
- boxY = curY + imageHeight / numEmotes - rectSize/2;
- ctx.fillStyle = emoteSet[Object.keys(emoteSet)[i]];
- ctx.fillRect(curX, curY, rectSize, rectSize);
- //draw emote
- //draw text
-
- curY += imageHeight / numEmotes;
- }
-
-
-
-
- */
+    })
+}
